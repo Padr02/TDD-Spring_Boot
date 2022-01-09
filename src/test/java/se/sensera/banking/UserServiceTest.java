@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
@@ -30,7 +30,7 @@ public class UserServiceTest {
         //TODO Måste skickas med som en parameter i UserService constructor
         usersRepository = mock(UsersRepository.class);
 
-        userService = null;
+        userService = null; //TODO create Your implementing class here
 
         userId = UUID.randomUUID().toString();
         user = mock(User.class);
@@ -44,7 +44,7 @@ public class UserServiceTest {
     void create_user_success() throws UseException {
         // Given
         when(usersRepository.all()).thenReturn(Stream.empty());
-        when(usersRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(usersRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // When
         User user = userService.createUser("Arne Gunnarsson", "20011010-1234");
@@ -70,7 +70,7 @@ public class UserServiceTest {
         });
 
         // Then
-        verify(usersRepository, never()).save(anyObject());
+        verify(usersRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.USER_PERSONAL_ID_NOT_UNIQUE));
         assertThat(userException.getActivity(), is(Activity.CREATE_USER));
     }
@@ -79,7 +79,7 @@ public class UserServiceTest {
     void update_name_success() throws UseException {
         // Given
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
-        when(usersRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(usersRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // when
         userService.changeUser(userId, changeUser -> changeUser.setName("Arne Andersson"));
@@ -94,7 +94,7 @@ public class UserServiceTest {
     void update_personal_id_success() throws UseException {
         // Given
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
-        when(usersRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(usersRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
         when(usersRepository.all()).thenReturn(Stream.empty());
 
         // when
@@ -129,7 +129,7 @@ public class UserServiceTest {
         });
 
         // Then
-        verify(usersRepository, never()).save(anyObject());
+        verify(usersRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_FOUND));
         assertThat(userException.getActivity(), is(Activity.UPDATE_USER));
     }
@@ -156,7 +156,7 @@ public class UserServiceTest {
         });
 
         // Then
-        verify(usersRepository, never()).save(anyObject());
+        verify(usersRepository, never()).save(any());
         assertThat(idUserException.get().getUserExceptionType(), is(UseExceptionType.USER_PERSONAL_ID_NOT_UNIQUE));
         assertThat(idUserException.get().getActivity(), is(Activity.UPDATE_USER));
     }
@@ -194,7 +194,7 @@ public class UserServiceTest {
     void inactivate_user_success() throws UseException {
         // Given
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
-        when(usersRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(usersRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // when
         userService.inactivateUser(userId);
@@ -215,7 +215,7 @@ public class UserServiceTest {
         });
 
         // Then
-        verify(usersRepository, never()).save(anyObject());
+        verify(usersRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_FOUND));
         assertThat(userException.getActivity(), is(Activity.UPDATE_USER));
     }

@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 import static se.sensera.banking.exceptions.HandleException.safe;
@@ -63,7 +63,7 @@ public class TransactionServiceTest {
         // Given
         String created = "2020-01-01 10:34";
         double amount = 100;
-        when(transactionsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(transactionsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         Transaction transaction = transactionService.createTransaction(created, user.getId(), account.getId(), amount);
 
@@ -81,7 +81,7 @@ public class TransactionServiceTest {
         // Given
         String created = "2020-01-01 10:34";
         double amount = -100;
-        when(transactionsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(transactionsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         Transaction transaction = transactionService.createTransaction(created, user.getId(), account.getId(), amount);
 
@@ -98,7 +98,7 @@ public class TransactionServiceTest {
         // Given
         String created = "2020-01-01 10:34";
         double amount = 100;
-        when(transactionsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(transactionsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         Transaction transaction = transactionService.createTransaction(created, otherUser.getId(), otherAccount.getId(), amount);
 
@@ -121,7 +121,7 @@ public class TransactionServiceTest {
             transactionService.createTransaction(created, otherUser.getId(), account.getId(), amount);
         });
 
-        verify(transactionsRepository, never()).save(anyObject());
+        verify(transactionsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_ALLOWED));
         assertThat(userException.getActivity(), is(Activity.CREATE_TRANSACTION));
     }
@@ -136,7 +136,7 @@ public class TransactionServiceTest {
             transactionService.createTransaction(created, user.getId(), account.getId(), amount);
         });
 
-        verify(transactionsRepository, never()).save(anyObject());
+        verify(transactionsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_FUNDED));
         assertThat(userException.getActivity(), is(Activity.CREATE_TRANSACTION));
     }

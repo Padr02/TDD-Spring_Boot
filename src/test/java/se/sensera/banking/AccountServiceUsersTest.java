@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AccountServiceUsersTest {
@@ -84,7 +84,7 @@ public class AccountServiceUsersTest {
 
         // Then
         verify(accountsRepository, never()).save(this.account);
-        verify(this.account, never()).addUser(anyObject());
+        verify(this.account, never()).addUser(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.CANNOT_ADD_OWNER_AS_USER));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -105,7 +105,7 @@ public class AccountServiceUsersTest {
 
         // Then
         verify(accountsRepository, never()).save(this.account);
-        verify(this.account, never()).addUser(anyObject());
+        verify(this.account, never()).addUser(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_OWNER));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -122,7 +122,7 @@ public class AccountServiceUsersTest {
 
         // Then
         verify(accountsRepository, never()).save(this.account);
-        verify(this.account, never()).addUser(anyObject());
+        verify(this.account, never()).addUser(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.ACCOUNT_NOT_ACTIVE));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -140,7 +140,7 @@ public class AccountServiceUsersTest {
 
         // Then
         verify(accountsRepository, never()).save(this.account);
-        verify(this.account, never()).addUser(anyObject());
+        verify(this.account, never()).addUser(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_FOUND));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -157,7 +157,7 @@ public class AccountServiceUsersTest {
 
         // Then
         verify(accountsRepository, never()).save(this.account);
-        verify(this.account, never()).addUser(anyObject());
+        verify(this.account, never()).addUser(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.USER_ALREADY_ASSIGNED_TO_THIS_ACCOUNT));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }

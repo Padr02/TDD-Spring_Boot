@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AccountServiceTest {
@@ -72,7 +72,7 @@ public class AccountServiceTest {
         // Given
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
 
-        when(accountsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(accountsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // When
         Account account = accountService.createAccount(userId, accountName);
@@ -93,7 +93,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.USER_NOT_FOUND));
         assertThat(userException.getActivity(), is(Activity.CREATE_ACCOUNT));
     }
@@ -113,7 +113,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.ACCOUNT_NAME_NOT_UNIQUE));
         assertThat(userException.getActivity(), is(Activity.CREATE_ACCOUNT));
     }
@@ -124,7 +124,7 @@ public class AccountServiceTest {
         String otherAccountName = "other";
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
         when(accountsRepository.getEntityById(eq(accountId))).thenReturn(Optional.of(account));
-        when(accountsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(accountsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // When
         Account account = accountService.changeAccount(userId, accountId, changeAccount -> {
@@ -160,7 +160,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         verify(this.account, never()).setName(anyString());
     }
 
@@ -186,7 +186,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         assertThat(userException.get().getUserExceptionType(), is(UseExceptionType.ACCOUNT_NAME_NOT_UNIQUE));
         assertThat(userException.get().getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -213,7 +213,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_OWNER));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -239,7 +239,7 @@ public class AccountServiceTest {
         });
 
         // Then
-        verify(accountsRepository, never()).save(anyObject());
+        verify(accountsRepository, never()).save(any());
         assertThat(userException.getUserExceptionType(), is(UseExceptionType.NOT_ACTIVE));
         assertThat(userException.getActivity(), is(Activity.UPDATE_ACCOUNT));
     }
@@ -250,7 +250,7 @@ public class AccountServiceTest {
         when(accountsRepository.all()).thenReturn(Stream.of(account));
         when(usersRepository.getEntityById(eq(userId))).thenReturn(Optional.of(user));
         when(accountsRepository.getEntityById(eq(accountId))).thenReturn(Optional.of(account));
-        when(accountsRepository.save(anyObject())).then(invocation -> invocation.getArguments()[0]);
+        when(accountsRepository.save(any())).then(invocation -> invocation.getArguments()[0]);
 
         // When
         Account account = accountService.inactivateAccount(userId, accountId);
