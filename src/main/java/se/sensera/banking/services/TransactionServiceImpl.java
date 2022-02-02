@@ -55,7 +55,27 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public double sum(String created, String userId, String accountId) throws UseException {
-        return 0;
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = null;
+        try {
+            date = dateFormatter.parse(created);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+        Account account = accountsRepository.getEntityById(accountId).get();
+        User user = usersRepository.getEntityById(userId).get();
+
+        if (account.getOwner().getId().equals(user.getId()) || account.getUsers().anyMatch(x -> x.equals(user))) {
+            Date date1 = date;
+            return transactionsRepository.all()
+                    .filter(x -> x.getAccount().getId()
+                            .equals(accountId))
+                    .filter(u -> u.getCreated().before(date1))
+                    .mapToDouble(Transaction::getAmount)
+                    .sum();
+        }
+
+        throw new UseException(Activity.SUM_TRANSACTION, UseExceptionType.NOT_ALLOWED);
     }
 
     @Override
