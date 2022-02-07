@@ -3,6 +3,7 @@ package se.sensera.banking;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.sensera.banking.exceptions.UseException;
+import se.sensera.banking.services.TransactionServiceImpl;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -12,8 +13,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class TransactionServiceParallelTest {
@@ -35,7 +34,7 @@ public class TransactionServiceParallelTest {
         accountsRepository = new TestAccountsRepository();
         transactionsRepository = new TestTransactionsRepository();
 
-        transactionService = null; //TODO create Your implementing class here
+        transactionService = new TransactionServiceImpl(usersRepository,accountsRepository,transactionsRepository); //TODO create Your implementing class here
 
         user = createUser("Arne Arnesson", "9283749238472", true);
         otherUser = createUser("Arne Arnesson", "9283749238472", true);
