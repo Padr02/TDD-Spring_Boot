@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User changeUser(String userId, Consumer<ChangeUser> changeUser) throws UseException {
-        User user = userExists(usersRepository, userId);
+        User user = userExists(userId);
         changeUser.accept(new ChangeUser() {
             @Override
             public void setName(String name) {
@@ -59,11 +59,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User inactivateUser(String userId) throws UseException {
-        User user = userExists(usersRepository, userId);
+        User user = userExists( userId);
         user.setActive(false);
         return usersRepository.save(user);
     }
-    private User userExists(UsersRepository usersRepository, String userId) throws UseException {
+    private User userExists(String userId) throws UseException {
         return usersRepository.getEntityById(userId)
                 .orElseThrow(() -> new UseException(Activity.UPDATE_USER, UseExceptionType.NOT_FOUND));
     }
