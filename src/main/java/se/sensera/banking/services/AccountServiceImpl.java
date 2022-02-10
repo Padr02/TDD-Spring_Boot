@@ -11,6 +11,7 @@ import se.sensera.banking.utils.ListUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Data
@@ -20,6 +21,7 @@ public class AccountServiceImpl implements AccountService {
 
     UsersRepository usersRepository;
     AccountsRepository accountsRepository;
+
 
     @Override
     public Account createAccount(String userId, String accountName) throws UseException {
@@ -34,10 +36,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account changeAccount(String userId, String accountId, Consumer<ChangeAccount> changeAccountConsumer) throws UseException {
         User user = getUser(userId);
-        Account account = accountsRepository
-                .getEntityById(accountId)
-                .filter(Account::isActive)
-                .orElseThrow(() -> new UseException(Activity.UPDATE_ACCOUNT, UseExceptionType.NOT_ACTIVE));
+        Account account = getAccountIfActive(accountId);
         if (!account.getOwner().getId().equals(user.getId())) {
             throw new UseException(Activity.UPDATE_ACCOUNT, UseExceptionType.NOT_OWNER);
         }
@@ -51,6 +50,27 @@ public class AccountServiceImpl implements AccountService {
             }
         });
         return account;
+    }
+    //testlösning
+    public Account changeAccount2(String userId, String accountId, Consumer<ChangeAccount> changeAccountConsumer) throws UseException {
+        User user = getUser(userId);
+        Account account = getAccountIfActive(accountId);
+        if (!account.getOwner().getId().equals(user.getId())) {
+            throw new UseException(Activity.UPDATE_ACCOUNT, UseExceptionType.NOT_OWNER);
+        }
+        UpdateAccount updateAccount = new UpdateAccount(account, name -> accountsRepository.all().anyMatch(u -> u.getName().equals(name)));
+        changeAccountConsumer.accept(updateAccount);
+        if (!updateAccount.shouldSave){
+            return account;
+        }
+        return accountsRepository.save(account);
+    }
+
+    private Account getAccountIfActive(String accountId) throws UseException {
+        return accountsRepository
+                .getEntityById(accountId)
+                .filter(Account::isActive)
+                .orElseThrow(() -> new UseException(Activity.UPDATE_ACCOUNT, UseExceptionType.NOT_ACTIVE));
     }
 
     @Override
@@ -104,7 +124,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-
     public Account removeUserFromAccount(String userId, String accountId, String userIdToBeAssigned) throws UseException {
         Account account = getAccount(accountId);
         User user = getUser(userId);
@@ -119,7 +138,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-
     public Account inactivateAccount(String userId, String accountId) throws UseException {
         verifyUser(userId);
         var account = accountsRepository.getEntityById(accountId)
@@ -147,7 +165,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Stream<Account> findAccounts(String searchValue, String userId, Integer pageNumber, Integer pageSize, SortOrder sortOrder) throws UseException {
+    public Stream<Account> findAccounts(String searchValue, String userId, Integer pageNumber, Integer pageSize, SortOrder sortOrder) {
         if (userId == null) {
             return switch (sortOrder) {
                 case None -> searchValue.isEmpty()
@@ -160,5 +178,27 @@ public class AccountServiceImpl implements AccountService {
                 .filter(u -> u.getUsers()
                         .anyMatch(a -> a.getId().equals(userId))
                         || u.getOwner().getId().equals(userId));
+    }
+    //testlösning
+    private static class UpdateAccount implements ChangeAccount {
+        boolean shouldSave = false;
+        Account account;
+        Predicate<String> checkUniqueName;
+
+        public UpdateAccount(Account account, Predicate<String> checkUniqueName) {
+            this.account = account;
+            this.checkUniqueName = checkUniqueName;
+        }
+
+        @Override
+        public void setName(String name) throws UseException {
+            if (checkUniqueName.test(name)) {
+                throw new UseException(Activity.UPDATE_ACCOUNT, UseExceptionType.ACCOUNT_NAME_NOT_UNIQUE);
+            }
+            if (!account.getName().equals(name)) {
+                account.setName(name);
+                shouldSave=true;
+            }
+        }
     }
 }
