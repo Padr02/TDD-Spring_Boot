@@ -46,7 +46,7 @@ public class TransactionServiceParallelTest {
     void create_parallel_transaction_success() {
         // Given
         String created = "2020-01-01 10:34";
-        int count = 1000;
+        int count = 100;
         Object monitorSync = new Object();
         transactionService.addMonitor(waitSync1msec(monitorSync));
 
@@ -73,7 +73,7 @@ public class TransactionServiceParallelTest {
     void create_parallel_sum_transaction_success() {
         // Given
         String created = "2020-01-01 10:34";
-        int count = 1000;
+        int count = 100; //
         Object monitorSync = new Object();
         transactionService.addMonitor(waitSync1msec(monitorSync));
 
@@ -113,7 +113,7 @@ public class TransactionServiceParallelTest {
     void monitor_created_transaction_success() throws InterruptedException {
         // Given
         String created = "2020-01-01 10:34";
-        final int count = 1000;
+        final int count = 100;
 
         List<Transaction> transactions = new LinkedList<>();
         transactionService.addMonitor(transaction -> {

@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
         return usersRepository.save(new UserImpl(UUID.randomUUID().toString(), name, pId, true));
     }
 
-
     @Override
     public User changeUser(String userId, Consumer<ChangeUser> changeUser) throws UseException {
         User user = userExists(userId);
@@ -42,6 +41,7 @@ public class UserServiceImpl implements UserService {
                 user.setName(name);
                 usersRepository.save(user);
             }
+
             @Override
             public void setPersonalIdentificationNumber(String personalIdentificationNumber) throws UseException {
                 boolean notUnique = usersRepository.all()
@@ -59,10 +59,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User inactivateUser(String userId) throws UseException {
-        User user = userExists( userId);
+        User user = userExists(userId);
         user.setActive(false);
         return usersRepository.save(user);
     }
+
     private User userExists(String userId) throws UseException {
         return usersRepository.getEntityById(userId)
                 .orElseThrow(() -> new UseException(Activity.UPDATE_USER, UseExceptionType.NOT_FOUND));
@@ -80,7 +81,6 @@ public class UserServiceImpl implements UserService {
             case None -> searchString.isEmpty()
                     ? ListUtils.applyPage(usersRepository.all(), pageNumber, pageSize).filter(User::isActive)
                     : usersRepository.all().filter(user -> user.getName().toUpperCase().contains(nameUpper));
-
             case Name -> usersRepository.all().sorted(Comparator.comparing(User::getName));
             case PersonalId -> usersRepository.all().sorted(Comparator.comparing(User::getPersonalIdentificationNumber));
 

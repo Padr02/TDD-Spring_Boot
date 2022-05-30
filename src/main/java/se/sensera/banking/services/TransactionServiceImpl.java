@@ -19,7 +19,7 @@ public class TransactionServiceImpl implements TransactionService {
     UsersRepository usersRepository;
     AccountsRepository accountsRepository;
     TransactionsRepository transactionsRepository;
-    final List<Consumer<Transaction>> consumerList = new ArrayList<>();
+    static final List<Consumer<Transaction>> consumerList = new ArrayList<>();
     Date date = null;
 
 
